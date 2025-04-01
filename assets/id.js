@@ -1,35 +1,55 @@
 // Pobierz parametry z URL
 var params = new URLSearchParams(window.location.search);
 
+// Elementy DOM
+const loginBtn = document.querySelector(".login");
+const welcomeText = document.querySelector(".welcome");
+const passwordInput = document.querySelector(".password_input");
+const eyeIcon = document.querySelector(".eye");
+
 // Ustaw przywitanie w zależności od godziny
-document.querySelector(".login").addEventListener('click', () => {
-    // Zmienione przekierowanie na poprawną ścieżkę
-    location.href = 'index.html?' + params.toString();
-});
-
-var welcome = "Dzień dobry!";
-var date = new Date();
-if (date.getHours() >= 18){
-    welcome = "Dobry wieczór!"
+function setWelcomeMessage() {
+    const date = new Date();
+    const hours = date.getHours();
+    welcomeText.textContent = hours >= 18 ? "Dobry wieczór!" : "Dzień dobry!";
 }
-document.querySelector(".welcome").innerHTML = welcome;
 
-// Obsługa pola hasła
-var input = document.querySelector(".password_input");
-var eye = document.querySelector(".eye");
-var original = "";
-
-input.addEventListener("keypress", (event) => {
-    if (event.key === 'Enter') {
-        document.activeElement.blur();
-        location.href = 'index.html?' + params.toString();
+// Przekierowanie do strony głównej
+function redirectToHome() {
+    // Sprawdź czy hasło zostało wprowadzone (prosta walidacja)
+    if (passwordInput.value.trim() === "") {
+        alert("Proszę wprowadzić hasło!");
+        return;
     }
-});
+    
+    // Przekieruj z zachowaniem parametrów
+    window.location.href = `index.html?${params.toString()}`;
+}
 
-// Pokazuj/ukryj hasło
-eye.addEventListener('click', () => {
-    eye.classList.toggle("eye_close");
-    input.type = eye.classList.contains("eye_close") ? "text" : "password";
-});
+// Obsługa zdarzeń
+function setupEventListeners() {
+    // Przycisk logowania
+    loginBtn.addEventListener('click', redirectToHome);
 
-// Usunięto zbędny zminifikowany kod
+    // Enter w polu hasła
+    passwordInput.addEventListener("keypress", (e) => {
+        if (e.key === 'Enter') {
+            redirectToHome();
+        }
+    });
+
+    // Pokazywanie/ukrywanie hasła
+    eyeIcon.addEventListener('click', () => {
+        eyeIcon.classList.toggle("eye_close");
+        passwordInput.type = eyeIcon.classList.contains("eye_close") ? "text" : "password";
+    });
+}
+
+// Inicjalizacja
+function init() {
+    setWelcomeMessage();
+    setupEventListeners();
+}
+
+// Uruchom aplikację
+document.addEventListener('DOMContentLoaded', init);
