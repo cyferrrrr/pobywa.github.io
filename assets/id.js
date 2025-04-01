@@ -1,55 +1,37 @@
-// Pobierz parametry z URL
-var params = new URLSearchParams(window.location.search);
+document.addEventListener('DOMContentLoaded', function() {
+    const params = new URLSearchParams(window.location.search);
+    const loginBtn = document.querySelector(".login");
+    const passwordInput = document.querySelector(".password_input");
+    const eyeIcon = document.querySelector(".eye");
 
-// Elementy DOM
-const loginBtn = document.querySelector(".login");
-const welcomeText = document.querySelector(".welcome");
-const passwordInput = document.querySelector(".password_input");
-const eyeIcon = document.querySelector(".eye");
-
-// Ustaw przywitanie w zależności od godziny
-function setWelcomeMessage() {
-    const date = new Date();
-    const hours = date.getHours();
-    welcomeText.textContent = hours >= 18 ? "Dobry wieczór!" : "Dzień dobry!";
-}
-
-// Przekierowanie do strony głównej
-function redirectToHome() {
-    // Sprawdź czy hasło zostało wprowadzone (prosta walidacja)
-    if (passwordInput.value.trim() === "") {
-        alert("Proszę wprowadzić hasło!");
-        return;
+    // Ustawienie komunikatu powitalnego
+    function setWelcomeMessage() {
+        const hour = new Date().getHours();
+        document.querySelector(".welcome").textContent = 
+            hour >= 18 ? "Dobry wieczór!" : "Dzień dobry!";
     }
-    
-    // Przekieruj z zachowaniem parametrów
-    window.location.href = `index.html?${params.toString()}`;
-}
 
-// Obsługa zdarzeń
-function setupEventListeners() {
-    // Przycisk logowania
-    loginBtn.addEventListener('click', redirectToHome);
-
-    // Enter w polu hasła
-    passwordInput.addEventListener("keypress", (e) => {
-        if (e.key === 'Enter') {
-            redirectToHome();
+    // Obsługa logowania
+    function handleLogin() {
+        if (!passwordInput.value.trim()) {
+            alert("Proszę wprowadzić hasło!");
+            return;
         }
-    });
+        window.location.href = `home.html?${params.toString()}`;
+    }
 
-    // Pokazywanie/ukrywanie hasła
-    eyeIcon.addEventListener('click', () => {
+    // Pokazuj/ukryj hasło
+    function togglePasswordVisibility() {
         eyeIcon.classList.toggle("eye_close");
         passwordInput.type = eyeIcon.classList.contains("eye_close") ? "text" : "password";
-    });
-}
+    }
 
-// Inicjalizacja
-function init() {
+    // Inicjalizacja
     setWelcomeMessage();
-    setupEventListeners();
-}
-
-// Uruchom aplikację
-document.addEventListener('DOMContentLoaded', init);
+    loginBtn.addEventListener('click', handleLogin);
+    eyeIcon.addEventListener('click', togglePasswordVisibility);
+    
+    passwordInput.addEventListener("keypress", (e) => {
+        if (e.key === 'Enter') handleLogin();
+    });
+});
